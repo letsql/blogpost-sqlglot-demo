@@ -6,5 +6,5 @@ sql = "select patients.eid from patients where predict_xgb('model.json', patient
 sql = transpile_predict(sql)
 
 engine = create_engine('postgresql://user:pass@localhost:5432/patients')
-df = pd.read_sql_query(sql, engine)
-print(df)
+result = pd.read_sql_query(sql, engine)
+print(result)
