@@ -15,7 +15,7 @@ with Timer("postgres + pandas"):
     query = "SELECT * FROM patients;"
     df = pd.read_sql_query(query, engine)
 
-    X = df.set_index('eid').drop(columns=['lengthofstay'] + [col for col in df.columns if col.startswith('facid_')])
+    X = df.set_index('eid').drop(columns=[col for col in df.columns if col.startswith('facid_')])
 
     predictions = model.predict(X)
     df_with_predictions = X.assign(lengthofstay=predictions)

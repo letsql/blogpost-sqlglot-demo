@@ -23,7 +23,6 @@ CREATE TABLE patients(
     pulse INTEGER,
     respiration DOUBLE PRECISION,
     secondarydiagnosisnonicd9 INTEGER,
-    lengthofstay INTEGER,
     facid_A DOUBLE PRECISION,
     facid_B DOUBLE PRECISION,
     facid_C DOUBLE PRECISION,
@@ -31,7 +30,7 @@ CREATE TABLE patients(
     facid_E DOUBLE PRECISION
 );
 
-COPY patients(eid, rcount, gender, dialysisrenalendstage, asthma, irondef, pneum, substancedependence, psychologicaldisordermajor, depress, psychother, fibrosisandother, malnutrition, hemo, hematocrit, neutrophils, sodium, glucose, bloodureanitro, creatinine, bmi, pulse, respiration, secondarydiagnosisnonicd9, lengthofstay, facid_A, facid_B, facid_C, facid_D, facid_E)
+COPY patients(eid, rcount, gender, dialysisrenalendstage, asthma, irondef, pneum, substancedependence, psychologicaldisordermajor, depress, psychother, fibrosisandother, malnutrition, hemo, hematocrit, neutrophils, sodium, glucose, bloodureanitro, creatinine, bmi, pulse, respiration, secondarydiagnosisnonicd9, facid_A, facid_B, facid_C, facid_D, facid_E)
 FROM '/app/data/patients.csv'
 DELIMITER ','
 CSV HEADER;
