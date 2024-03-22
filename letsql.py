@@ -16,7 +16,7 @@ def _is_null(arg):
     return Is(this=arg, expression=null())
 
 
-def _prune_trees(model: xgb.XGBRegressor, threshold) -> list:
+def _get_and_prune_trees(model: xgb.XGBRegressor, threshold=None) -> list:
     # get base_score
     config = json.loads(model.get_booster().save_config())
     base_score = float(config["learner"]["learner_model_param"]["base_score"])
@@ -27,6 +27,9 @@ def _prune_trees(model: xgb.XGBRegressor, threshold) -> list:
 
     # sort
     sorted_trees = sorted(trees, key=get_min_leaf, reverse=True)
+
+    if threshold is None:
+        return sorted_trees
 
     # do a cumulative sum to find the splitting point in O(1)
     cumulative_sum = list(accumulate(map(get_min_leaf, sorted_trees), initial=base_score))
@@ -150,14 +153,18 @@ def transpile_predict(sql):
 
     node = sg.parse_one(sql, dialect=Postgres)
     predict_expression = _extract_predict_function(node)
-    model = _get_model(predict_expression)
-    if threshold := _extract_prediction_threshold(predict_expression):
-        trees = _prune_trees(model, threshold)
+    if predict_expression is not None:
+        model = _get_model(predict_expression)
+        threshold = _extract_prediction_threshold(predict_expression)
+        trees = _get_and_prune_trees(model, threshold=threshold)
         if len(trees) < 5:  # the model is simple enough
             case_expressions = _transform_to_case_expressions(trees)
             case_expressions = _prune_branches(case_expressions, predict_expression)
             return _inline_trees(node, case_expressions).sql(pretty=True)
         else:
             pass  # TODO implement model splitting
+    else:
+        return sql
+
 
 
