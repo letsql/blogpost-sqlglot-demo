@@ -16,7 +16,7 @@ def _is_null(arg):
     return Is(this=arg, expression=null())
 
 
-def _get_and_prune_trees(model: xgb.XGBRegressor, threshold=None) -> list:
+def _get_trees(model: xgb.XGBRegressor, threshold=None) -> list:
     # get base_score
     config = json.loads(model.get_booster().save_config())
     base_score = float(config["learner"]["learner_model_param"]["base_score"])
@@ -156,7 +156,7 @@ def transpile_predict(sql):
     if predict_expression is not None:
         model = _get_model(predict_expression)
         threshold = _extract_prediction_threshold(predict_expression)
-        trees = _get_and_prune_trees(model, threshold=threshold)
+        trees = _get_trees(model, threshold=threshold)
         if len(trees) < 5:  # the model is simple enough
             case_expressions = _transform_to_case_expressions(trees)
             case_expressions = _prune_branches(case_expressions, predict_expression)
